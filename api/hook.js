@@ -15,16 +15,14 @@ function extractFormData(reqBody) {
 
 async function sendToWebhook(data) {
   try {
-    const formData = new URLSearchParams();
-    formData.append('first_name', data.first_name);
-    formData.append('email', data.email);
-    formData.append('message', data.message);
-    formData.append('timestamp', new Date().toISOString());
-    formData.append('source', BUSINESS_NAME);
-
     const response = await fetch(WEBHOOK_URL, {
       method: 'POST',
-      body: formData
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        ...data,
+        timestamp: new Date().toISOString(),
+        source: BUSINESS_NAME
+      })
     });
 
     console.log('✅ Form data sent to webhook:', data);
