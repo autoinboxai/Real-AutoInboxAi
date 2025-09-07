@@ -1,17 +1,15 @@
 const express = require('express');
-const bodyParser = require('body-parser');
+const cors = require('cors');
 const hook = require('./api/hook');
 const fetch = require('node-fetch');
 const app = express();
 const PORT = process.env.PORT || 3000;
 
 // Enable CORS
-const cors = require('cors');
 app.use(cors());
 
-// Parse URL-encoded and JSON bodies
-app.use(bodyParser.urlencoded({ extended: true }));
-app.use(bodyParser.json());
+// Parse JSON bodies
+app.use(express.json());
 
 // Serve public JS files
 app.use(express.static('public'));
@@ -33,7 +31,7 @@ app.post('/create-script-tag', async (req, res) => {
       body: JSON.stringify({
         script_tag: {
           event: 'onload',
-          src: `https://${req.headers.host}/contactform.js`,
+          src: `https://real-auto-inbox-ai.vercel.app/contactform.js`,
           display_scope: 'online_store'
         }
       })
