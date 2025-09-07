@@ -31,7 +31,7 @@ app.post('/create-script-tag', async (req, res) => {
       body: JSON.stringify({
         script_tag: {
           event: 'onload',
-          src: `https://real-auto-inbox-ai.vercel.app/contactform.js`,
+          src: 'https://real-autoinboxaii.onrender.com/contactform.js', // 👈 hosted script
           display_scope: 'online_store'
         }
       })
@@ -45,11 +45,3 @@ app.post('/create-script-tag', async (req, res) => {
   }
 });
 
-// Default route
-app.get('/', (req, res) => {
-  res.send('✅ AutoInboxAI Webhook Server is running.');
-});
-
-app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
-});
