@@ -6,7 +6,15 @@ const fetch = require('node-fetch');
 // CLIENT CONFIGURATION
 // ===========================================
 const BUSINESS_NAME = 'RapidWeb'; // Change per client
-const WEBHOOK_URL = 'https://hook.eu2.make.com/tnoc53juwpz8ozheiwcdkz1etab8jekr'; // Your new webhook
+
+// Use dynamic webhook URL from index.js
+let WEBHOOK_URL = require('../index').WEBHOOK_URL;
+
+// Function to get the current webhook URL dynamically
+function getWebhookUrl() {
+  // Re-import WEBHOOK_URL in case it was updated
+  return require('../index').WEBHOOK_URL || WEBHOOK_URL;
+}
 
 // Extract form data
 function extractFormData(reqBody) {
@@ -27,7 +35,7 @@ async function sendToWebhook(data) {
     formData.append('timestamp', new Date().toISOString());
     formData.append('source', BUSINESS_NAME);
 
-    const response = await fetch(WEBHOOK_URL, {
+    const response = await fetch(getWebhookUrl(), {
       method: 'POST',
       body: formData
     });
