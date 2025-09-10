@@ -20,6 +20,20 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use("/contact-form.js", express.static(__dirname + "/public/contactform.js"));
 
 // ===========================================
+// Root page
+// ===========================================
+app.get("/", (req, res) => {
+  res.send(`
+    <html>
+      <body style="font-family:Arial,sans-serif; text-align:center; padding:50px;">
+        <h1>🚀 AutoInboxAI App is Live!</h1>
+        <p>Go to <a href="/hook">/hook</a> to configure your webhook URL.</p>
+      </body>
+    </html>
+  `);
+});
+
+// ===========================================
 // Webhook admin page
 // ===========================================
 app.get("/hook", (req, res) => {
@@ -58,8 +72,8 @@ app.post("/hook/update", (req, res) => {
     console.log(`✅ Webhook URL updated to: ${WEBHOOK_URL}`);
     res.send(`
       <html>
-        <body>
-          <p>Webhook URL updated successfully!</p>
+        <body style="font-family:Arial,sans-serif; text-align:center; padding:50px;">
+          <p>✅ Webhook URL updated successfully!</p>
           <a href="/hook">Back to Webhook Page</a>
         </body>
       </html>
