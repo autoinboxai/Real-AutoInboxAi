@@ -1,15 +1,16 @@
 {
   "name": "auto-inbox-ai",
   "version": "1.0.0",
-  "description": "Shopify app to capture contact form submissions",
+  "description": "Webhook + Shopify OAuth app",
   "main": "index.js",
   "scripts": {
     "start": "node index.js"
   },
   "dependencies": {
-    "express": "^4.18.2",
+    "express": "^4.19.2",
+    "body-parser": "^1.20.2",
     "cors": "^2.8.5",
-    "node-fetch": "^3.3.2"
+    "node-fetch": "^2.6.7"
   },
   "engines": {
     "node": "22.x"
