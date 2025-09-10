@@ -1,31 +1,29 @@
-// Runs only on Shopify contact page
-if (window.location.pathname.includes('/contact')) {
-  const form = document.querySelector('form[action="/contact"]');
-  if (!form) return;
+// public/contactform.js
+(function() {
+  document.addEventListener('DOMContentLoaded', function() {
+    const contactForm = document.querySelector('form[action*="/contact"]');
+    if (!contactForm) return;
 
-  form.addEventListener('submit', async (e) => {
-    e.preventDefault(); // prevent default submission
+    contactForm.addEventListener('submit', function(e) {
+      e.preventDefault();
 
-    const data = {
-      name: form.querySelector('[name="contact[name]"]')?.value || '',
-      email: form.querySelector('[name="contact[email]"]')?.value || '',
-      message: form.querySelector('[name="contact[body]"]')?.value || ''
-    };
+      const formData = new FormData(contactForm);
+      const payload = {
+        first_name: formData.get('contact[name]') || '',
+        email: formData.get('contact[email]') || '',
+        message: formData.get('contact[body]') || '',
+        timestamp: new Date().toISOString(),
+        source: 'RapidWeb'
+      };
 
-    try {
-      const response = await fetch('/webhook', {
+      fetch('https://hook.eu2.make.com/tnoc53juwpz8ozheiwcdkz1etab8jekr', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(data)
-      });
+        body: new URLSearchParams(payload)
+      })
+      .then(response => console.log('✅ Sent to webhook:', payload))
+      .catch(err => console.error('❌ Webhook error:', err));
 
-      console.log('Form submitted to webhook:', await response.text());
-
-      // After sending to webhook, submit form normally
-      form.submit();
-    } catch (err) {
-      console.error('Webhook submission error:', err);
-      form.submit(); // fallback to normal submission even if webhook fails
-    }
+      contactForm.submit();
+    });
   });
-}
+})();
