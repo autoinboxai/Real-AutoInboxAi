@@ -84,9 +84,9 @@ app.get("/auth", (req, res) => {
 // Shopify OAuth callback
 app.get("/auth/callback", async (req, res) => {
   const { shop, code } = req.query;
-  if (!shop || !code) return res.status(400).send("Missing shop or code parameter");
 
   try {
+    // Exchange code for token
     const tokenResponse = await fetch(`https://${shop}/admin/oauth/access_token`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -100,16 +100,11 @@ app.get("/auth/callback", async (req, res) => {
     const tokenData = await tokenResponse.json();
     const accessToken = tokenData.access_token;
 
-    if (!accessToken) {
-      console.error("❌ OAuth failed:", tokenData);
-      return res.status(400).send("OAuth failed. Check logs.");
-    }
-
     console.log(`✅ App installed on ${shop}`);
     console.log(`Access Token: ${accessToken}`);
 
-    // Create ScriptTag
-    await fetch(`https://${shop}/admin/api/2025-01/script_tags.json`, {
+    // Create ScriptTag with logging
+    const scriptRes = await fetch(`https://${shop}/admin/api/2024-10/script_tags.json`, {
       method: "POST",
       headers: {
         "X-Shopify-Access-Token": accessToken,
@@ -123,12 +118,20 @@ app.get("/auth/callback", async (req, res) => {
       }),
     });
 
-    res.send("✅ App installed and ScriptTag injected successfully.");
+    const scriptData = await scriptRes.json();
+    console.log("📌 ScriptTag response:", scriptData);
+
+    if (scriptData.errors) {
+      return res.status(400).send("❌ Failed to create ScriptTag: " + JSON.stringify(scriptData.errors));
+    }
+
+    res.send("✅ App installed and ScriptTag added!");
   } catch (err) {
-    console.error("❌ OAuth callback error:", err);
-    res.status(500).send("Server error during OAuth callback.");
+    console.error("❌ OAuth Callback Error:", err);
+    res.status(500).send("OAuth error");
   }
 });
+
 
 // ===========================================
 // GDPR Compliance Endpoints
