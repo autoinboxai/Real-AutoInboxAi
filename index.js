@@ -10,9 +10,9 @@ const SHOPIFY_CLIENT_ID = process.env.SHOPIFY_API_KEY;
 const SHOPIFY_CLIENT_SECRET = process.env.SHOPIFY_API_SECRET;
 const APP_URL = process.env.APP_URL;
 
-// In-memory storage for access tokens per shop
-const SHOP_TOKENS = {};
 let WEBHOOK_URL = process.env.WEBHOOK_URL;
+const SHOP_TOKENS = {};
+
 
 // Middleware
 app.use(bodyParser.json());
