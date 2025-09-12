@@ -133,8 +133,8 @@ app.get("/auth/callback", async (req, res) => {
 // ===========================================
 // Include webhook router
 // ===========================================
-const hookRouter = require("./hook");
-app.use("/hook", hookRouter);
+const hookRouter = require('./api/hook');
+app.use('/hook', hookRouter);
 
 // ===========================================
 // Export webhook URL
