@@ -3,7 +3,7 @@ const router = express.Router();
 const fetch = require("node-fetch");
 
 const BUSINESS_NAME = "RapidWeb";
-let WEBHOOK_URL = require("../index").WEBHOOK_URL;
+let WEBHOOK_URL = require("./index").WEBHOOK_URL;
 
 function extractFormData(reqBody) {
   return {
@@ -31,6 +31,7 @@ async function sendToWebhook(data) {
   }
 }
 
+// Endpoint for contact form submissions
 router.post("/send", async (req, res) => {
   const formData = extractFormData(req.body);
   if (!formData.email || !formData.first_name) return res.status(400).send("Missing required fields");
