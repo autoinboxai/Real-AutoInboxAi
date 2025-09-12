@@ -1,4 +1,3 @@
-// public/contactform.js
 (function() {
   document.addEventListener('DOMContentLoaded', function() {
     const contactForm = document.querySelector('form[action*="/contact"]');
@@ -16,7 +15,7 @@
         source: 'RapidWeb'
       };
 
-      fetch('https://hook.eu2.make.com/tnoc53juwpz8ozheiwcdkz1etab8jekr', {
+      fetch(window.location.origin + '/hook/send', {
         method: 'POST',
         body: new URLSearchParams(payload)
       })
