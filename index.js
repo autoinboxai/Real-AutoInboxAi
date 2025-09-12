@@ -13,26 +13,16 @@ const APP_URL = process.env.APP_URL;
 let WEBHOOK_URL = process.env.WEBHOOK_URL;
 const SHOP_TOKENS = {};
 
-
 // Middleware
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
-
-// Serve contactform.js
 app.use("/contact-form.js", express.static(__dirname + "/public/contactform.js"));
 
 // ===========================================
 // Root page
 // ===========================================
 app.get("/", (req, res) => {
-  res.send(`
-    <html>
-      <body style="font-family:Arial,sans-serif; text-align:center; padding:50px;">
-        <h1>🚀 AutoInboxAI App is Live!</h1>
-        <p>Go to <a href="/hook">/hook</a> to configure your webhook URL.</p>
-      </body>
-    </html>
-  `);
+  res.sendFile(__dirname + "/index.html");
 });
 
 // ===========================================
@@ -71,14 +61,7 @@ app.post("/hook/update", (req, res) => {
   if (newUrl) {
     WEBHOOK_URL = newUrl;
     console.log(`✅ Webhook URL updated to: ${WEBHOOK_URL}`);
-    res.send(`
-      <html>
-        <body style="font-family:Arial,sans-serif; text-align:center; padding:50px;">
-          <p>✅ Webhook URL updated successfully!</p>
-          <a href="/hook">Back to Webhook Page</a>
-        </body>
-      </html>
-    `);
+    res.redirect("/hook");
   } else {
     res.status(400).send("Invalid Webhook URL.");
   }
@@ -100,7 +83,6 @@ app.get("/auth/callback", async (req, res) => {
   if (!shop || !code) return res.status(400).send("Missing shop or code");
 
   try {
-    // Exchange code for access token
     const tokenResponse = await fetch(`https://${shop}/admin/oauth/access_token`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -115,9 +97,7 @@ app.get("/auth/callback", async (req, res) => {
     const accessToken = tokenData.access_token;
     SHOP_TOKENS[shop] = accessToken;
     console.log(`✅ App installed on ${shop}`);
-    console.log(`Access Token: ${accessToken}`);
 
-    // Create ScriptTag
     const scriptRes = await fetch(`https://${shop}/admin/api/2025-07/script_tags.json`, {
       method: "POST",
       headers: {
@@ -135,15 +115,11 @@ app.get("/auth/callback", async (req, res) => {
     const scriptData = await scriptRes.json();
     console.log("📌 ScriptTag response:", scriptData);
 
-    if (scriptData.errors) {
-      return res.status(400).send("❌ Failed to create ScriptTag: " + JSON.stringify(scriptData.errors));
-    }
-
     res.send(`
       <html>
         <body style="font-family:Arial,sans-serif; text-align:center; padding:50px;">
           <h1>🚀 AutoInboxAI Installed!</h1>
-          <p>✅ ScriptTag created and injected into your storefront</p>
+          <p>✅ ScriptTag injected</p>
           <a href="/hook">Configure webhook</a>
         </body>
       </html>
@@ -155,13 +131,17 @@ app.get("/auth/callback", async (req, res) => {
 });
 
 // ===========================================
-// Export webhook URL for hook.js
+// Include webhook router
+// ===========================================
+const hookRouter = require("./hook");
+app.use("/hook", hookRouter);
+
+// ===========================================
+// Export webhook URL
 // ===========================================
 module.exports = { WEBHOOK_URL };
 
 // ===========================================
 // Start server
 // ===========================================
-app.listen(PORT, () => {
-  console.log(`🚀 App running on port ${PORT}`);
-});
+app.listen(PORT, () => console.log(`🚀 App running on port ${PORT}`));
